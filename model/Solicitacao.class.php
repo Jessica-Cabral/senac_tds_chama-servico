@@ -7,17 +7,16 @@ class SolicitacaoServico extends Conexao
 {
     // Atributos
     private $id_solicitacao;
-    private $id_prestador;
-    private $id_servico;
-    private $descricao;
+    private $descricao_solicitacao;
     private $id_endereco;
     private $data_abertura;
     private $data_fim;
-    private $orcamento;
-    private $imagens;
-    private $id_status_solicitacao;
+    private $img_solicitacao;
+    private $id_pessoa;
+    private $id_serviço;
 
     // Getters e Setters
+
     public function getIdSolicitacao()
     {
         return $this->id_solicitacao;
@@ -26,36 +25,17 @@ class SolicitacaoServico extends Conexao
     public function setIdSolicitacao($id_solicitacao)
     {
         $this->id_solicitacao = $id_solicitacao;
+
     }
 
-    public function getIdPrestador()
+    public function getDescricaoSolicitacao()
     {
-        return $this->id_prestador;
+        return $this->descricao_solicitacao;
     }
 
-    public function setIdPrestador($id_prestador)
+    public function setDescricaoSolicitacao($descricao_solicitacao)
     {
-        $this->id_prestador = $id_prestador;
-    }
-
-    public function getIdServico()
-    {
-        return $this->id_servico;
-    }
-
-    public function setIdServico($id_servico)
-    {
-        $this->id_servico = $id_servico;
-    }
-
-    public function getDescricao()
-    {
-        return $this->descricao;
-    }
-
-    public function setDescricao($descricao)
-    {
-        $this->descricao = $descricao;
+        $this->descricao_solicitacao = $descricao_solicitacao;
     }
 
     public function getIdEndereco()
@@ -66,6 +46,7 @@ class SolicitacaoServico extends Conexao
     public function setIdEndereco($id_endereco)
     {
         $this->id_endereco = $id_endereco;
+
     }
 
     public function getDataAbertura()
@@ -76,7 +57,9 @@ class SolicitacaoServico extends Conexao
     public function setDataAbertura($data_abertura)
     {
         $this->data_abertura = $data_abertura;
+
     }
+
 
     public function getDataFim()
     {
@@ -86,36 +69,41 @@ class SolicitacaoServico extends Conexao
     public function setDataFim($data_fim)
     {
         $this->data_fim = $data_fim;
+
+        return $this;
     }
 
-    public function getOrcamento()
+    public function getImgSolicitacao()
     {
-        return $this->orcamento;
+        return $this->img_solicitacao;
     }
 
-    public function setOrcamento($orcamento)
+    public function setImgSolicitacao($img_solicitacao)
     {
-        $this->orcamento = $orcamento;
+        $this->img_solicitacao = $img_solicitacao;
+
     }
 
-    public function getImagens()
+    public function getIdPessoa()
     {
-        return $this->imagens;
+        return $this->id_pessoa;
     }
 
-    public function setImagens($imagens)
+    public function setIdPessoa($id_pessoa)
     {
-        $this->imagens = $imagens;
+        $this->id_pessoa = $id_pessoa;
+
     }
 
-    public function getIdStatusSolicitacao()
+    public function getIdServico()
     {
-        return $this->id_status_solicitacao;
+        return $this->id_servico;
     }
 
-    public function setIdStatusSolicitacao($id_status_solicitacao)
+    public function setIdServico($id_servico)
     {
-        $this->id_status_solicitacao = $id_status_solicitacao;
+        $this->id_servico = $id_servico;
+
     }
 
     // Método para inserir uma solicitação de serviço
@@ -273,5 +261,7 @@ class SolicitacaoServico extends Conexao
             return false;
         }
     }
+
+
 }
 ?>
