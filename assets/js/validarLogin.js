@@ -1,47 +1,50 @@
-/*let tentativas = 0; // Contador de tentativas
-const maxTentativas = 3; // Máximo de tentativas permitidas
+// assets/js/validarLogin.js
 
-// Simula credenciais corretas (troque conforme necessário)
-const usuarioCorreto = "teste@gmail.com";
-const senhaCorreta = "12345";
+document.addEventListener('DOMContentLoaded', function () {
+    // Seleciona o formulário
+    const form = document.querySelector('form');
+    // Seleciona os campos de email e senha
+    const emailInput = document.getElementById('email');
+    const senhaInput = document.getElementById('senha');
+    // Seleciona o botão de login
+    const loginButton = document.querySelector('button[name="Login"]');
+    // Seleciona o elemento de mensagem de erro
+    const errorMessage = document.getElementById('errorMessage');
 
-// Função para validar o login
-function validarLogin() {
-    // Obtém os valores dos campos
-    const username = document.getElementById("typeEmailX-2").value;
-    const password = document.getElementById("senha").value;
+    // Função para validar o formulário
+    function validarLogin(event) {
+        // Previne o envio padrão do formulário para validação
+        event.preventDefault();
 
-    // Verifica se as credenciais estão corretas
-    if (username === usuarioCorreto && password === senhaCorreta) {
-        alert("Login bem-sucedido!"); 
-        window.location.href = "PerfilPrestador.html"; // Redireciona após sucesso
-    } else {
-        tentativas++; // Incrementa tentativas
-        if (tentativas >= maxTentativas) {
-            alert("Você errou a senha 3 vezes. Sua conta está temporariamente bloqueada.\nPor favor, resete sua senha.");
-            document.getElementById("typeEmailX-2").disabled = true;
-            document.getElementById("senha").disabled = true;
-            document.querySelector("button").disabled = true;
+        const email = emailInput.value.trim();
+        const senha = senhaInput.value.trim();
+
+        // Verifica se os campos estão vazios
+        if (email === '' || senha === '') {
+            errorMessage.textContent = 'Por favor, digite seu email e senha.';
+            errorMessage.style.display = 'block';
+            return false; // Impede o envio do formulário
         } else {
-            const restantes = maxTentativas - tentativas;
-            alert(`Usuário ou senha incorretos.\nVocê tem mais ${restantes} tentativa(s).`);
+            errorMessage.textContent = ''; // Limpa a mensagem de erro
+            errorMessage.style.display = 'none';
+            form.submit(); // Envia o formulário se os campos estiverem preenchidos
         }
     }
-} */
 
-// Adiciona um evento ao botão de login
-document.addEventListener("DOMContentLoaded", function() {
-    const botaoLogin = document.querySelector("button");
-    botaoLogin.addEventListener("click", validarLogin);
-});
-document.getElementById("telefone").addEventListener("input", function (e) {
-    let input = e.target.value.replace(/\D/g, ""); // Remove tudo que não for número
-    if (input.length > 10) {
-        // Formato (99) 99999-9999
-        input = input.replace(/^(\d{2})(\d{5})(\d{4}).*/, "($1) $2-$3");
-    } else {
-        // Formato (99) 9999-9999
-        input = input.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, "($1) $2-$3");
-    }
-    e.target.value = input;
+    // Adiciona o evento de clique ao botão "Acessar"
+    loginButton.addEventListener('click', validarLogin);
+
+    // Limpa a mensagem de erro ao digitar nos campos
+    emailInput.addEventListener('input', function () {
+        if (errorMessage.textContent !== '') {
+            errorMessage.textContent = '';
+            errorMessage.style.display = 'none';
+        }
+    });
+    senhaInput.addEventListener('input', function () {
+        if (errorMessage.textContent !== '') {
+            errorMessage.textContent = '';
+            errorMessage.style.display = 'none';
+        }
+    });
 });

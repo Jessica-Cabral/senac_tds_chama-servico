@@ -119,93 +119,54 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-    const inputDataNascimento = document.getElementById("dataNascimento");
-    const erroData = document.getElementById("erroData");
-    const criarContaBtn = document.getElementById("criarContaBtn");
+    const telefoneInput = document.getElementById("telefone");
 
-    // Função para aplicar máscara de data no campo (DD/MM/YYYY)
-    function aplicarMascaraData(e) {
-        let valor = e.target.value.replace(/\D/g, ""); // Remove caracteres não numéricos
-        if (valor.length > 2 && valor.length <= 4) {
-            valor = valor.replace(/(\d{2})(\d{0,2})/, "$1/$2");
-        } else if (valor.length > 4) {
-            valor = valor.replace(/(\d{2})(\d{2})(\d{0,4})/, "$1/$2/$3");
-        }
-        e.target.value = valor;
-    }
+    telefoneInput.addEventListener("input", function () {
+        let valor = telefoneInput.value.replace(/\D/g, ""); // Remove tudo que não for número
 
-    // Função para validar a idade (18+)
-    function validarIdade(dataNascimento) {
-        const hoje = new Date();
-        const partesData = dataNascimento.split("/"); // Divide DD/MM/YYYY
-        const dataFormatada = new Date(partesData[2], partesData[1] - 1, partesData[0]);
+        // Limita a 11 dígitos (ex: 88992992708)
+        valor = valor.substring(0, 11);
 
-        if (dataFormatada > hoje || partesData.length < 3) {
-            return false; // Data inválida (futura ou incompleta)
-        }
-
-        const idade = hoje.getFullYear() - dataFormatada.getFullYear();
-        const mesAtual = hoje.getMonth() - dataFormatada.getMonth();
-        const diaAtual = hoje.getDate() - dataFormatada.getDate();
-
-        // Verifica se já fez aniversário no ano
-        if (mesAtual < 0 || (mesAtual === 0 && diaAtual < 0)) {
-            return idade - 1 >= 18;
-        }
-        return idade >= 18;
-    }
-
-    $('#termo').click(() => {
-        const div = $('<div>').attr('style',`
-            position: absolute;
-            width: 65%;
-            height: 420px;
-            border-radius: 10px;
-            background: #fff; 
-    
-            color: #3d3d3d;
-    
-            -webkit-box-shadow: 0px 0px 6px -1px #000000; 
-            box-shadow: 0px 0px 6px -1px #000000;
-    
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            align-items: center;
-        `)
-    
-        $(div).addClass('termo')
-    
-        $(div).append(`Eu entendo e aceitos os termos impostos pela plataforma...`)
-    
-        $(div).append(
-            $('<button>Ok</button>').click(() => {
-                div.hide()
-            })
-        )
-        
-        $('body').append(div)
-    })
-    
-
-    // Evento para aplicar máscara no campo data
-    inputDataNascimento.addEventListener("input", aplicarMascaraData);
-
-    // Evento ao tentar criar conta
-    criarContaBtn.addEventListener("click", function (e) {
-        const dataNascimento = inputDataNascimento.value;
-
-        if (!validarIdade(dataNascimento)) {
-            erroData.style.display = "block"; // Exibe erro
-            e.preventDefault(); // Evita envio do formulário
+        if (valor.length <= 10) {
+            // Fixo: (88) 3222-2708
+            valor = valor.replace(/^(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
         } else {
-            erroData.style.display = "none"; // Esconde erro se válido
-            alert("Cadastro criado com sucesso!");
-
-            // Atraso de 3 segundos antes de redirecionar para a página de login
-            setTimeout(function() {
-                window.location.href = "Login.html"; // Redireciona para a página de login
-            }, 2000); // 3000 milissegundos = 3 segundos
+            // Celular: (88) 9 9299-2708
+            valor = valor.replace(/^(\d{2})(\d{1})(\d{4})(\d{0,4})/, "($1) $2 $3-$4");
         }
+
+        telefoneInput.value = valor;
     });
 });
+
+$('#termo').click(() => {
+    const div = $('<div>').attr('style',`
+        position: absolute;
+        width: 65%;
+        height: 420px;
+        border-radius: 10px;
+        background: #fff; 
+
+        color: #3d3d3d;
+
+        -webkit-box-shadow: 0px 0px 6px -1px #000000; 
+        box-shadow: 0px 0px 6px -1px #000000;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+    `)
+
+    $(div).addClass('termo')
+
+    $(div).append(`Eu entendo e aceitos os termos impostos pela plataforma...`)
+
+    $(div).append(
+        $('<button>Ok</button>').click(() => {
+            div.hide()
+        })
+    )
+    
+    $('body').append(div)
+})

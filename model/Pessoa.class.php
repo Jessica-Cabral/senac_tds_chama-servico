@@ -1,4 +1,6 @@
 <?php
+// Incluir classe de conexão
+include_once 'Conexao.class.php';
 
 class Pessoa extends Conexao
 {
@@ -10,11 +12,10 @@ class Pessoa extends Conexao
     private $data_nascimento;
     private $data_cadastro;
     private $telefone;
+    private $senha;
     private $foto_perfil;
     private $cliente;
     private $prestador;
-    private $localidade;
-    private $portfolio;
     private $data_inativacao;
     private $status;
 
@@ -88,6 +89,15 @@ class Pessoa extends Conexao
     {
         $this->telefone = $telefone;
     }
+    public function getSenha()
+    {
+        return $this->senha;
+    }
+
+    public function setSenha($senha)
+    {
+        $this->senha = $senha;
+    }
 
     public function getFotoPerfil()
     {
@@ -119,26 +129,6 @@ class Pessoa extends Conexao
         $this->prestador = $prestador;
     }
 
-    public function getLocalidade()
-    {
-        return $this->localidade;
-    }
-
-    public function setLocalidade($localidade)
-    {
-        $this->localidade = $localidade;
-    }
-
-    public function getPortfolio()
-    {
-        return $this->portfolio;
-    }
-
-    public function setPortfolio($portfolio)
-    {
-        $this->portfolio = $portfolio;
-    }
-
     public function getDataInativacao()
     {
         return $this->data_inativacao;
@@ -160,104 +150,134 @@ class Pessoa extends Conexao
     }
 
     // métodos da classe Pessoa
-
-    public function cadastrarPessoa($nome, $cpf, $email, $data_nascimento, $telefone, $cliente, $prestador, $localidade)
+    //Consultar pessoa pelo email e retornar ID - formulario consulta
+    public function consultarIdPessoa($email)
     {
-        //setar os atributos
-        $this->setNome($nome);
-        $this->setCpf($cpf);
+        // Setar os atributos
         $this->setEmail($email);
+
+        // Montar query
+        $sql = "SELECT id_pessoa FROM tb_pessoa WHERE email = :email";
+
+        // Executa a query
+        try {
+            // Conectar com o banco
+            $bd = $this->conectar();
+            // Preparar o SQL
+            $query = $bd->prepare($sql);
+            // Blindagem dos dados
+            $query->bindValue(':email', $this->getEmail(), PDO::PARAM_STR);
+
+            // Executar a query
+            $query->execute();
+            // Retorna o resultado
+            $dadosPessoa = $query->fetchAll(PDO::FETCH_OBJ);
+            //verificar o resultado
+            foreach ($dadosPessoa as $key => $valor) {
+                $id_pessoa = $valor->id_pessoa;
+            }
+            return $id_pessoa;
+
+        } catch (PDOException $e) {
+            // print "Erro ao consultar";
+            return false;
+        }
+    }
+
+       //Consultar pessoa pelo email e retornar ID - formulario consulta
+       public function consultarDadosPessoa($id_pessoa)
+       {
+           // Setar os atributos
+           $this->setIdPessoa($id_pessoa);
+   
+           // Montar query
+           $sql = "SELECT * FROM tb_pessoa WHERE id_pessoa = :id_pessoa";
+   
+           // Executa a query
+           try {
+               // Conectar com o banco
+               $bd = $this->conectar();
+               // Preparar o SQL
+               $query = $bd->prepare($sql);
+               // Blindagem dos dados
+               $query->bindValue(':id_pessoa', $this->getIdPessoa(), PDO::PARAM_INT);
+   
+               // Executar a query
+               $query->execute();
+               // Retorna o resultado
+               $dadosPessoa = $query->fetchAll(PDO::FETCH_OBJ);
+               return $dadosPessoa;
+   
+           } catch (PDOException $e) {
+               // print "Erro ao consultar";
+               return false;
+           }
+       }
+       
+    public function cadastrarPessoa($nome, $cpf, $email, $data_nascimento, $telefone, $senha, $cliente, $prestador)
+    {
+
+        // Setar os atributos
+        $this->setNome($nome);
+        $this->setEmail($email);
+        $this->setCpf($cpf);
         $this->setDataNascimento($data_nascimento);
         $this->setTelefone($telefone);
+        $this->setSenha($senha);
         $this->setCliente($cliente);
         $this->setPrestador($prestador);
-        $this->setLocalidade($localidade);
-        $this->setStatus('Ativo');
-    
-        // montar query
+
+        // Montar query
         $sql = "INSERT INTO tb_pessoa
-                (id_pessoa, nome, cpf, email, data_nascimento, data_cadastro, telefone, foto_perfil, cliente, prestador, localidade, status) 
-                VALUES (NULL, :nome, :cpf, :email, :data_nascimento, NOW(), :telefone, '', :cliente, :prestador, :localidade, :status)";
-    
-        // executa a query
+            (id_pessoa, nome, email, cpf, data_nascimento, data_cadastro, telefone, foto_perfil, senha, cliente, prestador)
+            VALUES (NULL, :nome, :email, :cpf, :data_nascimento, now(), :telefone, '', :senha, :cliente, :prestador)";
+
+        // Executa a query
         try {
-            // conectar com o banco
+            // Conectar com o banco
             $bd = $this->conectar();
-            // preparar o sql
+            // Preparar o sql
             $query = $bd->prepare($sql);
-            // blidagem dos dados
+            // Blindagem dos dados
             $query->bindValue(':nome', $this->getNome(), PDO::PARAM_STR);
-            $query->bindValue(':cpf', $this->getCpf(), PDO::PARAM_STR);
             $query->bindValue(':email', $this->getEmail(), PDO::PARAM_STR);
+            $query->bindValue(':cpf', $this->getCpf(), PDO::PARAM_STR);
             $query->bindValue(':data_nascimento', $this->getDataNascimento(), PDO::PARAM_STR);
             $query->bindValue(':telefone', $this->getTelefone(), PDO::PARAM_STR);
-            $query->bindValue(':cliente', $this->getCliente(), PDO::PARAM_INT); // Cliente é um booleano (true/false)
-            $query->bindValue(':prestador', $this->getPrestador(), PDO::PARAM_INT); // Prestador é um booleano (true/false)
-            $query->bindValue(':localidade', $this->getLocalidade(), PDO::PARAM_STR);
-            $query->bindValue(':status', $this->getStatus(), PDO::PARAM_STR);
-    
-            // excutar a query
+            $query->bindValue(':senha', md5($this->getSenha()), PDO::PARAM_STR);
+            $query->bindValue(':cliente', $this->getCliente(), PDO::PARAM_INT);
+            $query->bindValue(':prestador', $this->getPrestador(), PDO::PARAM_INT);
+
+            // Executar a query
             $query->execute();
-            // retorna o resultado
+            // Retorna o resultado
             return true;
         } catch (PDOException $e) {
-            //print "Erro ao inserir";
+            print "Erro ao inserir: " . $e->getMessage();
             return false;
         }
     }
-
-    public function consultarPessoa($nome_pessoa)
+    public function inativarPessoa($id_pessoa)
     {
-        //setar os atributos
-        $this->setNome($nome_pessoa);
+        // Example implementation: Update the database to set the status as inactive
+        $sql = "UPDATE pessoas SET status = 'inativo' WHERE id_pessoa = :id_pessoa";
+        $bd = $this->conectar();
+        $stmt = $bd->prepare($sql);
+        $stmt->bindParam(':id_pessoa', $id_pessoa, PDO::PARAM_INT);
+        return $stmt->execute();
 
-        //montar query
-        $sql = "SELECT * FROM tb_pessoa where true ";
-
-        //vericar se o nome é nulo
-        if ($this->getNome() != null) {
-            $sql .= " and nome like :nome";
-        }
-
-        //executa a query
-        try {
-            //conectar com o banco
-            $bd = $this->conectar();
-            //preparar o sql
-            $query = $bd->prepare($sql);
-            //blidagem dos dados
-            if ($this->getNome() != null) {
-                $this->setNome("%" . $nome_pessoa . "%");
-                $query->bindValue(':nome', $this->getNome(), PDO::PARAM_STR);
-            }
-            //excutar a query
-            $query->execute();
-            //retorna o resultado
-            $resultado = $query->fetchAll(PDO::FETCH_OBJ);
-            return $resultado;
-
-        } catch (PDOException $e) {
-            //print "Erro ao consultar";
-            return false;
-        }
     }
-
-    public function alterarPessoa($id_pessoa, $nome, $cpf, $email, $data_nascimento, $telefone, $foto_perfil, $cliente, $prestador, $localidade)
+    public function alterarPessoa($id_pessoa,  $telefone, $foto_perfil, $cliente, $prestador)
     {
         //setar os atributos
         $this->setIdPessoa($id_pessoa);
-        $this->setNome($nome);
-        $this->setCpf($cpf);
-        $this->setEmail($email);
-        $this->setDataNascimento($data_nascimento);
         $this->setTelefone($telefone);
         $this->setFotoPerfil($foto_perfil);
         $this->setCliente($cliente);
         $this->setPrestador($prestador);
-        $this->setLocalidade($localidade);
 
         //montar query
-        $sql = "UPDATE tb_pessoa SET nome = :nome, cpf = :cpf, email = :email, data_nascimento = :data_nascimento, telefone = :telefone, foto_perfil = :foto_perfil, cliente = :cliente, prestador = :prestador, localidade = :localidade WHERE id_pessoa = :id_pessoa";
+        $sql = "UPDATE tb_pessoa SET telefone = :telefone, foto_perfil = :foto_perfil, cliente = :cliente, prestador = :prestador  WHERE id_pessoa = :id_pessoa";
 
         //executa a query
         try {
@@ -267,15 +287,10 @@ class Pessoa extends Conexao
             $query = $bd->prepare($sql);
             //blidagem dos dados
             $query->bindValue(':id_pessoa', $this->getIdPessoa(), PDO::PARAM_INT);
-            $query->bindValue(':nome', $this->getNome(), PDO::PARAM_STR);
-            $query->bindValue(':cpf', $this->getCpf(), PDO::PARAM_STR);
-            $query->bindValue(':email', $this->getEmail(), PDO::PARAM_STR);
-            $query->bindValue(':data_nascimento', $this->getDataNascimento(), PDO::PARAM_STR);
             $query->bindValue(':telefone', $this->getTelefone(), PDO::PARAM_STR);
             $query->bindValue(':foto_perfil', $this->getFotoPerfil(), PDO::PARAM_STR);
             $query->bindValue(':cliente', $this->getCliente(), PDO::PARAM_INT);
             $query->bindValue(':prestador', $this->getPrestador(), PDO::PARAM_INT);
-            $query->bindValue(':localidade', $this->getLocalidade(), PDO::PARAM_STR);
 
             //excutar a query
             $query->execute();
@@ -283,7 +298,47 @@ class Pessoa extends Conexao
             return true;
 
         } catch (PDOException $e) {
-            //print "Erro ao alterar";
+            print "Erro ao alterar". $e->getMessage();
+            die();
+            return false;
+        }
+    }
+
+    
+    public function consultarPessoa($nome)
+    {
+        // Setar os atributos
+        $this->setNome($nome);
+
+        // Montar query
+        $sql = "SELECT * FROM tb_pessoa WHERE true";
+
+        // Verificar se o nome não é nulo
+        if ($this->getNome() != null) {
+            $sql .= " AND nome LIKE :nome";
+        }
+
+        $sql .= " ORDER BY nome";
+
+        // Executa a query
+        try {
+            // Conectar com o banco
+            $bd = $this->conectar();
+            // Preparar o SQL
+            $query = $bd->prepare($sql);
+            // Blindagem dos dados
+            if ($this->getNome() != null) {
+                $this->setNome("%" . $nome . "%");
+                $query->bindValue(':nome', $this->getNome(), PDO::PARAM_STR);
+            }
+            // Executar a query
+            $query->execute();
+            // Retorna o resultado
+            $resultado = $query->fetchAll(PDO::FETCH_OBJ);
+            return $resultado;
+
+        } catch (PDOException $e) {
+            // print "Erro ao consultar";
             return false;
         }
     }
@@ -292,7 +347,7 @@ class Pessoa extends Conexao
     {
         //setar os atributos
         $this->setIdPessoa($id_pessoa);
-        $this->setStatus('Inativo'); // Definir status como inativo
+        $this->setStatus(0); // Definir status como inativo
         //montar query
         $sql = "UPDATE tb_pessoa SET data_inativacao = NOW(), status = :status WHERE id_pessoa = :id_pessoa";
 
@@ -314,5 +369,147 @@ class Pessoa extends Conexao
             return false;
         }
     }
+
+    //metodo validarlogin
+    public function validarPessoa($email, $senha)
+    {
+        $this->setEmail($email);
+        $this->setSenha($senha);
+
+        $sql = "SELECT COUNT(*) AS quantidade FROM tb_pessoa WHERE email = :email AND senha = :senha";
+
+        try {
+            //conectar com o banco
+            $bd = $this->conectar();
+            //preparar o sql
+            $query = $bd->prepare($sql);
+            //blidagem dos dados
+            $query->bindValue(':email', $this->getEmail(), PDO::PARAM_STR);
+            $query->bindValue(':senha', md5($this->getSenha()), PDO::PARAM_STR);
+            //excutar a query
+            $query->execute();
+            //retorna o resultado
+            $resultado = $query->fetchAll(PDO::FETCH_OBJ);
+            //verificar o resultado
+            foreach ($resultado as $key => $valor) {
+                $quantidade = $valor->quantidade;
+            }
+            //testar quantidade
+            if ($quantidade == 1) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (PDOException $e) {
+            //print "Erro ao consultar";
+            return false;
+        }
+    }
+
+    //metodo validarEmail
+    public function validarEmail($email)
+    {
+        //setar os dados
+        $this->setEmail($email);
+
+        //sql
+        $sql = "SELECT count(*) as quantidade FROM tb_pessoa WHERE email= :email";
+
+        try {
+            //conectar com o banco
+            $bd = $this->conectar();
+            //preparar o sql
+            $query = $bd->prepare($sql);
+            //blidagem dos dados
+            $query->bindValue(':email', $this->getEmail(), PDO::PARAM_STR);
+            //excutar a query
+            $query->execute();
+            //retorna o resultado
+            $resultado = $query->fetchAll(PDO::FETCH_OBJ);
+            //verificar o resultado
+            foreach ($resultado as $key => $valor) {
+                $quantidade = $valor->quantidade;
+            }
+            //testar quantidade
+            if ($quantidade == 1) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (PDOException $e) {
+            //print "Erro ao consultar";
+            return false;
+        }
+    }
+
+// Removed duplicate perfilUsuario method definition to fix syntax error
+
+    public function perfilPessoa($email)
+    {
+        //setar os dados
+        $this->setEmail($email);
+
+        //montar query
+        $sql = "SELECT cliente,prestador FROM tb_pessoa WHERE email= :email";
+
+        try {
+            //conectar com o banco
+            $bd = $this->conectar();
+            //preparar o sql
+            $query = $bd->prepare($sql);
+            //blidagem dos dados
+            $query->bindValue(':email', $this->getEmail(), PDO::PARAM_STR);
+            //excutar a query
+            $query->execute();
+            //retorna o resultado
+            $resultado = $query->fetchAll(PDO::FETCH_OBJ);
+            //verificar o resultado
+            foreach ($resultado as $key => $valor) {
+                $cliente = $valor->cliente;
+                $prestador = $valor->prestador;
+            }
+            if ($cliente == 1 && $prestador == 0) {
+                $perfil = "cliente";
+            } elseif ($prestador == 1 && $cliente == 0) {
+                $perfil = "prestador";
+            } elseif ($cliente == 1 && $prestador == 1) {
+                $perfil = "clientePrestador";
+            } 
+
+            return $perfil;
+
+        } catch (PDOException $e) {
+            //print "Erro ao consultar";
+            return false;
+        }
+    }
+
+    public function alterarSenha($email, $senha)
+    {
+        //setar os dados
+        $this->setEmail($email);
+        $this->setSenha($senha);
+
+        //montar query
+        $sql = "update tb_usuario set senha= :senha where email= :email";
+
+        try {
+            //conectar com o banco
+            $bd = $this->conectar();
+            //preparar o sql
+            $query = $bd->prepare($sql);
+            //blidagem dos dados
+            $query->bindValue(':email', $this->getEmail(), PDO::PARAM_STR);
+            $query->bindValue(':senha', $this->getSenha(), PDO::PARAM_STR);
+            //excutar a query
+            $query->execute();
+            //retorna o resultado
+            return true;
+        } catch (PDOException $e) {
+            //print "Erro ao consultar";
+            return false;
+        }
+    }
 }
-?>

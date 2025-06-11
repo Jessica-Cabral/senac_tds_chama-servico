@@ -1,4 +1,5 @@
 /* Estilos gerais */
+
 :root {
   --primary-color: #6a2c7c; /* Roxo principal */
   --secondary-color: #572264; /* Roxo escuro */
@@ -8,7 +9,11 @@
   --dark-color: #1c1c1c; /* Preto escuro */
 }
 
+
 body {
+ 
+  display: flex;
+  flex-direction: column;
   font-family: 'Arial', sans-serif;
   background-color: var(--light-gray);
   color: var(--dark-color);
@@ -72,3 +77,4 @@ body {
 #resultadosBusca .profissional:last-child {
   border-bottom: none;
 }
+

@@ -42,13 +42,15 @@
                     e que seja o mesmo da conta que você deseja
                     recuperar
                 </p>
-
-                <button>Enviar</button>
+                <button type="submit" name="recuperar_senha" class="btn btn-primary">Enviar<i class="bi bi-box-arrow-in-right"></i></button>
+                <form class="d-flex" action="login.php">
+            <button type="subtmit" class="btn btn-warning">Entrar</button>
+        </form>
             </div>
         </div>
     </div>
 
-    <a href="index.html">
+    <a href="index.php">
         <div id="bubble">
             <img src="assets/img/user.png" alt="icone-usuário" title="fazer-login">
         </div>

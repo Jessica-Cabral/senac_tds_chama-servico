@@ -21,7 +21,7 @@
   <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
   <!-- Arquivo CSS principal do template -->
-  <link href="assets/css/style.css" rel="stylesheet">
+  <link href="assets/css/style_home.css" rel="stylesheet">
   <link href="assets/css/responsive.css" rel="stylesheet">
 
 </head>
@@ -35,7 +35,7 @@
       <!-- INÍCIO - LOGO -->
       <div class="logo">
         <h1 class="text-light">
-          <a href="index.php">
+          <a href="#">
             <img src="assets/img/logo.png" alt="logo">
           </a>
         </h1>
@@ -44,11 +44,12 @@
       <!-- INÍCIO - BARRA DE NAVEGAÇÃO -->
       <nav id="navbar" class="navbar">
         <ul>
-          <li><a class="active" href="index.php">Home</a></li>
+          <li><a class="active" href="#">Home</a></li>
       
           </li>
-          <li><a href="Servicos.php">Serviços</a></li>
-          <li><a href="CadUsuario.php">Crie sua conta</a></li>
+          <li><a href="#">Serviços</a></li>
+       
+          <li><a name="abrirformpessoa" href="index.php?CadPessoa">Crie sua conta</a></li>
           <li><a href="Login.php">Entre</a> </li>
 
           
