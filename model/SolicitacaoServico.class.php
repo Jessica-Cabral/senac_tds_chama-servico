@@ -120,15 +120,6 @@ class SolicitacaoServico extends Conexao
         $this->id_prestador = $id_prestador;
     }
 
-    public function getOrcamento()
-    {
-        return $this->orcamento;
-    }
-
-    public function setOrcamento($orcamento)
-    {
-        $this->orcamento = $orcamento;
-    }
 
     /**
      * Método para inserir uma solicitação de serviço

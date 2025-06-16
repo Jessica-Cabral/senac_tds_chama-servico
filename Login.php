@@ -26,7 +26,7 @@
         <div class="banner">
             <img src="assets/img/login.png" alt="imagem-login">
             <p style="color: #fff; font-weight: 400;">
-                Seja bem vindo, acesse e aproveite todo o conteúdo,
+                Seja bem-vindo, acesse e aproveite todo o conteúdo,
                 <br>somos uma equipe de profissionais empenhados em
                 <br>trazer o melhor conteúdo direcionado a você, usuário. 
             </p>
@@ -40,7 +40,7 @@
                 </h1>
 
                 <div class="box">
-                    <h2>faça o seu login agora</h2>
+                    <h2>Faça o seu login agora</h2>
                     
                     <input type="email" name="email" id="email" placeholder="E-mail" value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
                     <input type="password" name="senha" id="senha" placeholder="Senha">
