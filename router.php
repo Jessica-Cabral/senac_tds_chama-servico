@@ -1,4 +1,6 @@
 <?php
+// Iniciar sessão no início do router
+session_start();
 //pegar a url
 $url = explode('?', $_SERVER['REQUEST_URI']);
 //escolher na variável $url do link desejado
@@ -53,21 +55,6 @@ if (isset($_POST['abrirformpessoa'])) {
     //invocar o método inserir_autor
     $objController->abrirformpessoa();
 }
-//inserir Servico
-// if (isset($_POST['inserir_servico'])) {
-//     //instanciar controller
-//     $objControllerSolicitacaoServico = new ControllerServico();
-//     //dados
-//     $id_prestador = htmlspecialchars($_POST['id_prestador']);
-//     $id_servico = htmlspecialchars($_POST['id_servico']);
-//     $descricao = htmlspecialchars($_POST['descricao']);
-//     $id_endereco = htmlspecialchars($_POST['id_endereco']);
-//     $orcamento = htmlspecialchars($_POST['orcamento']);
-//     $imagens = htmlspecialchars($_FILES['imagens']);
-//     $id_status_solicitacao = htmlspecialchars($_POST['id_status_solicitacao']);
-
-//     $objControllerSolicitacaoServicoo->inserirServico($id_prestador, $id_servico, $descricao, $id_endereco, $orcamento, $imagens, $id_status_solicitacao);
-// }
 
 //inserir Pessoa
 if (isset($_POST['cadastrar_pessoa'])) {
@@ -88,33 +75,11 @@ if (isset($_POST['cadastrar_pessoa'])) {
 }
 
 #ROTA  SERVIÇO
-//inserir tipo de servico
-if (isset($_POST['cadastrar_servico'])) {
-    //instanciar controller
-    $objController = new Controller();
-    //dados
-   
-    $id_pessoa = htmlspecialchars($_POST['id_pessoa']);
-    $id_tipo_servico = htmlspecialchars($_POST['id_tipo_servico']);
-    $descricao = htmlspecialchars($_POST['descricao']);
-    $cep = htmlspecialchars($_POST['cep']);
-    $logradouro = htmlspecialchars($_POST['logradouro']);
-    $numero = htmlspecialchars($_POST['numero']);
-    $complemento = htmlspecialchars($_POST['complemento']);
-    $bairro = htmlspecialchars($_POST['bairro']);
-    $cidade = htmlspecialchars($_POST['cidade']);
-    $uf = htmlspecialchars($_POST['uf']);
-    $portfolio = $_FILES['portfolio'];
-    $id_status_solicitacao = htmlspecialchars($_POST['id_status_solicitacao']);
-   
-    //invocar o método
-    $objController->cadastrar_servico($id_pessoa, $id_tipo_servico, $descricao, $cep, $logradouro, $numero, $complemento, $bairro, $cidade, $uf, $portfolio, $id_status_solicitacao);
-}
 
 //consultar tipo de serviço
 if (isset($_POST['consultar_tipo_serviço'])) {
     //instanciar controller
-    $objControllerServico = new ControllerServico();
+    $objController = new Controller();
     //dados
     $descricao_tipo_servico = htmlspecialchars($_POST['descricao_tipo_servico']);
     //invocar o método
@@ -124,7 +89,7 @@ if (isset($_POST['consultar_tipo_serviço'])) {
 //alterar tipo de serviço
 if (isset($_POST['alterar_tipo_servico'])) {
     //instanciar controller
-    $objControllerServico = new ControllerServico();
+    $objController= new Controller();
     //dados
     $id_tipo_servico = htmlspecialchars($_POST['id_tipo_servico']);
     $descricao_tipo_servico = htmlspecialchars($_POST['descricao_tipo_servico']);
@@ -226,4 +191,32 @@ if (isset($_POST['excluir_prestador_admin'])) {
     $id_pessoa = htmlspecialchars($_POST['id_pessoa']);
     //invocar o método
     $objController->excluir_prestador_admin($id_pessoa);
+}
+
+# ROTA SOLICITAÇÃO DE SERVIÇO
+// ROTA SOLICITAÇÃO DE SERVIÇO
+
+// Rota para cadastro de solicitação
+if (isset($_POST['cadastrar_solicitacao'])) {
+    session_start(); // Garantir que a sessão está iniciada
+    
+    // Verificar se o usuário está logado através dos dadosPessoa
+    if (!isset($_SESSION['dadosPessoa']) || empty($_SESSION['dadosPessoa'])) {
+        $_SESSION['mensagem'] = [
+            'tipo' => 'danger',
+            'texto' => 'Você precisa estar logado para solicitar um serviço.'
+        ];
+        include_once 'view/ErroSolicitacao.php';
+        exit;
+    }
+
+    $objController = new Controller();
+    
+    // Pegar o ID da pessoa da sessão
+    $id_pessoa = $_SESSION['dadosPessoa'][0]->id_pessoa;
+    $id_servico = htmlspecialchars($_POST['servico']);
+    $descricao_solicitacao = htmlspecialchars($_POST['descricao_solicitacao']);
+    $img_solicitacao = $_FILES['img_solicitacao'];
+    
+    $objController->cadastrar_solicitacao($id_pessoa, $id_servico, $descricao_solicitacao, $img_solicitacao);
 }

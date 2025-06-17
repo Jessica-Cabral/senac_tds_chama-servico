@@ -1097,7 +1097,57 @@ class Controller
                //mostrar mensagem
                $this->mostrarMensagem("Erro ao excluir serviço!");
            }
-       }
+        }
 
-} 
-      
+    ##SOLICITAÇÃO DE SERVIÇO
+    //cadastrar solicitação de serviço
+    public function cadastrar_solicitacao($id_pessoa, $id_servico, $descricao_solicitacao, $img_solicitacao) {
+        session_start(); 
+        if (!isset($_SESSION['dadosPessoa']) || empty($_SESSION['dadosPessoa'])) {
+            $_SESSION['mensagem'] = [
+                'tipo' => 'danger',
+                'texto' => 'Sessão expirada. Faça login novamente.'
+            ];
+            header('Location: index.php?pagina=login');
+            exit;
+        }
+        
+        $objSolicitacao = new SolicitacaoServico();
+        
+        // Configurar atributos da solicitação
+        $objSolicitacao->setDescricaoSolicitacao($descricao_solicitacao);
+        $objSolicitacao->setCep($_POST['cep']);
+        $objSolicitacao->setLogradouro($_POST['logradouro']);
+        $objSolicitacao->setNumero($_POST['numero']);
+        $objSolicitacao->setComplemento($_POST['complemento'] ?? null);
+        $objSolicitacao->setBairro($_POST['bairro']);
+        $objSolicitacao->setCidade($_POST['cidade']);
+        $objSolicitacao->setUf($_POST['uf']);
+        $objSolicitacao->setIdPessoa($id_pessoa);
+        $objSolicitacao->setIdServico($id_servico);
+        
+        // Processar imagens se existirem
+        if(!empty($img_solicitacao['name'][0])) {
+            $objSolicitacao->processarImagens($img_solicitacao);
+        }
+        die();
+        // Executar o cadastro
+        if($objSolicitacao->cadastrarSolicitacao()) {
+            $_SESSION['mensagem'] = [
+                'tipo' => 'success',
+                'texto' => 'Solicitação cadastrada com sucesso!'
+            ];
+            include_once 'view/NovaSolicitacao.php';
+        } else {
+            $_SESSION['mensagem'] = [
+                'tipo' => 'danger',
+                'texto' => 'Erro ao cadastrar solicitação. Tente novamente.'
+            ];
+            include_once 'view/ErroSolicitacao.php';
+            //header('Location: ?pagina=nova-solicitacao');
+        }
+        exit;
+    }
+
+   
+}

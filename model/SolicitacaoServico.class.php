@@ -8,18 +8,21 @@ class SolicitacaoServico extends Conexao
     // Atributos
     private $id_solicitacao;
     private $descricao_solicitacao;
-    private $id_endereco;
-    private $data_abertura;
-    private $data_fim;
+    private $cep;
+    private $logradouro;
+    private $numero;
+    private $complemento;
+    private $bairro;
+    private $cidade;
+    private $uf;
     private $img_solicitacao;
     private $id_status_solicitacao;
+    private $data_abertura;
+    private $data_fechamento;
     private $id_pessoa;
     private $id_servico;
-    private $id_prestador;
-    private $orcamento;
-
-
     // Getters e Setters
+   
     public function getIdSolicitacao()
     {
         return $this->id_solicitacao;
@@ -28,6 +31,7 @@ class SolicitacaoServico extends Conexao
     public function setIdSolicitacao($id_solicitacao)
     {
         $this->id_solicitacao = $id_solicitacao;
+
     }
 
     public function getDescricaoSolicitacao()
@@ -37,39 +41,83 @@ class SolicitacaoServico extends Conexao
 
     public function setDescricaoSolicitacao($descricao_solicitacao)
     {
-        $this->descricao_solicitacao = $descricao_solicitacao;
+        $this->descricao_solicitacao = htmlspecialchars(strip_tags($descricao_solicitacao));
     }
 
-    public function getIdEndereco()
+    public function getCep()
     {
-        return $this->id_endereco;
+        return $this->cep;
     }
 
-    public function setIdEndereco($id_endereco)
+    public function setCep($cep)
     {
-        $this->id_endereco = $id_endereco;
+        $this->cep = htmlspecialchars(strip_tags(str_replace(['-', ' '], '', $cep)));
     }
 
-    public function getDataAbertura()
+    public function getLogradouro()
     {
-        return $this->data_abertura;
+        return $this->logradouro;
     }
 
-    public function setDataAbertura($data_abertura)
+    public function setLogradouro($logradouro)
     {
-        $this->data_abertura = $data_abertura;
+        $this->logradouro = $logradouro;
+
     }
 
-    public function getDataFim()
+    public function getNumero()
     {
-        return $this->data_fim;
+        return $this->numero;
     }
 
-    public function setDataFim($data_fim)
+    public function setNumero($numero)
     {
-        $this->data_fim = $data_fim;
+        $this->numero = $numero;
+
     }
 
+    public function getComplemento()
+    {
+        return $this->complemento;
+    }
+
+    public function setComplemento($complemento)
+    {
+        $this->complemento = $complemento;
+    }
+
+    public function getBairro()
+    {
+        return $this->bairro;
+    }
+
+    public function setBairro($bairro)
+    {
+        $this->bairro = $bairro;
+
+    }
+
+    public function getCidade()
+    {
+        return $this->cidade;
+    }
+
+    public function setCidade($cidade)
+    {
+        $this->cidade = $cidade;
+
+    }
+
+    public function getUf()
+    {
+        return $this->uf;
+    }
+
+    public function setUf($uf)
+    {
+        $this->uf = $uf;
+
+    }
     public function getImgSolicitacao()
     {
         return $this->img_solicitacao;
@@ -88,6 +136,27 @@ class SolicitacaoServico extends Conexao
     public function setIdStatusSolicitacao($id_status_solicitacao)
     {
         $this->id_status_solicitacao = $id_status_solicitacao;
+
+    }
+
+    public function getDataAbertura()
+    {
+        return $this->data_abertura;
+    }
+
+    public function setDataAbertura($data_abertura)
+    {
+        $this->data_abertura = $data_abertura;
+    }
+
+    public function getDataFechamento()
+    {
+        return $this->data_fechamento;
+    }
+
+    public function setDataFechamento($data_fechamento)
+    {
+        $this->data_fechamento = $data_fechamento;
     }
 
     public function getIdPessoa()
@@ -110,59 +179,95 @@ class SolicitacaoServico extends Conexao
         $this->id_servico = $id_servico;
     }
 
-    public function getIdPrestador()
-    {
-        return $this->id_prestador;
-    }
 
-    public function setIdPrestador($id_prestador)
-    {
-        $this->id_prestador = $id_prestador;
-    }
-
-
-    /**
-     * Método para inserir uma solicitação de serviço
-     */
-    public function inserirServico($id_solicitacao, $descricao_solicitacao,
-        $id_endereco, $data_abertura, $data_fim, $img_solicitacao, $id_status_solicitacao, $id_pessoa, $id_servico)
-    {
-        // Setar os atributos
-        $this->setIdSolicitacao($id_solicitacao);
-        $this->setDescricaoSolicitacao($descricao_solicitacao);
-        $this->setIdEndereco($id_endereco);
-        $this->setDataAbertura($data_abertura);
-        $this->setDataFim($data_fim);
-        $this->setImgSolicitacao($img_solicitacao);
-        $this->setIdStatusSolicitacao($id_status_solicitacao);
-        $this->setIdPessoa($id_pessoa);
-        $this->setIdServico($id_servico);
-
+    // Método para inserir uma nova solicitação de serviço
+  public function cadastrarSolicitacao() {
         // Montar query
-        $sql = "INSERT INTO tb_solicitacao 
-                (id_solicitacao, descricao_solicitacao, id_endereco, data_abertura, data_fim, img_solicitacao, id_status_solicitacao, id_pessoa, id_servico) 
-                VALUES (:id_solicitacao, :descricao_solicitacao, :id_endereco, :data_abertura, :data_fim, :img_solicitacao, :id_status_solicitacao, :id_pessoa, :id_servico)";
+    //     echo $sql = "INSERT INTO tb_solicitacao
+    //             (descricao_solicitacao, cep, logradouro, numero, complemento, 
+    //              bairro, cidade, uf, img_solicitacao, id_status_solicitacao, 
+    //              data_abertura, id_pessoa, id_servico)
+    //             VALUES 
+    //             (:descricao_solicitacao, :cep, :logradouro, :numero, :complemento, 
+    //              :bairro, :cidade, :uf, :img_solicitacao, 1, 
+    //              NOW(), :id_pessoa, :id_servico)";
 
-        // Executar a query
-        try {
-            $bd = $this->conectar();
-            $query = $bd->prepare($sql);
-            $query->bindValue(':id_solicitacao', $this->getIdSolicitacao(), PDO::PARAM_INT);
-            $query->bindValue(':descricao_solicitacao', $this->getDescricaoSolicitacao(), PDO::PARAM_STR);
-            $query->bindValue(':id_endereco', $this->getIdEndereco(), PDO::PARAM_INT);
-            $query->bindValue(':data_abertura', $this->getDataAbertura(), PDO::PARAM_STR);
-            $query->bindValue(':data_fim', $this->getDataFim(), PDO::PARAM_STR);
-            $query->bindValue(':img_solicitacao', $this->getImgSolicitacao(), PDO::PARAM_STR);
-            $query->bindValue(':id_status_solicitacao', $this->getIdStatusSolicitacao(), PDO::PARAM_INT);
-            $query->bindValue(':id_pessoa', $this->getIdPessoa(), PDO::PARAM_INT);
-            $query->bindValue(':id_servico', $this->getIdServico(), PDO::PARAM_INT);
-            return $query->execute();
-        } catch (PDOException $e) {
-            error_log("Erro ao inserir serviço: " . $e->getMessage());
+    //     try {
+    //         // Conectar com o banco
+    //         $bd = $this->conectar();
+    //         // Preparar o sql
+    //         $query = $bd->prepare($sql);
+    //         // Blindagem dos dados
+    //                     $query->bindValue(':descricao_solicitacao', $this->getDescricaoSolicitacao(), PDO::PARAM_STR);
+    //         $query->bindValue(':cep', $this->getCep(), PDO::PARAM_STR);
+    //         $query->bindValue(':logradouro', $this->getLogradouro(), PDO::PARAM_STR);
+    //         $query->bindValue(':numero', $this->getNumero(), PDO::PARAM_STR);
+    //         $query->bindValue(':complemento', $this->getComplemento(), PDO::PARAM_STR);
+    //         $query->bindValue(':bairro', $this->getBairro(), PDO::PARAM_STR);
+    //         $query->bindValue(':cidade', $this->getCidade(), PDO::PARAM_STR);
+    //         $query->bindValue(':uf', $this->getUf(), PDO::PARAM_STR);
+    //         $query->bindValue(':img_solicitacao', $this->getImgSolicitacao(), PDO::PARAM_STR);
+    //         $query->bindValue(':id_status_solicitacao', $this->getIdStatusSolicitacao(), PDO::PARAM_INT);
+    //         $query->bindValue(':id_pessoa', $this->getIdPessoa(), PDO::PARAM_INT);
+    //         $query->bindValue(':id_servico', $this->getIdServico(), PDO::PARAM_INT);
+
+    //         // Executar a query
+    //         $query->execute();
+            
+    //         // Retornar resultado
+    //         return true;
+    //     } catch (PDOException $e) {
+    //         error_log("Erro ao cadastrar solicitação: " . $e->getMessage());
+    //         return false;
+    //     }
+    // }
+
+     $sql = "INSERT INTO tb_solicitacao 
+            (descricao_solicitacao, cep, logradouro, numero, id_pessoa, id_servico, id_status_solicitacao, data_abertura) 
+            VALUES 
+            ('TESTE DESCRIÇÃO', '12345678', 'Rua Teste', '123', 1, 1, 1, NOW())";
+    
+    try {
+        $bd = $this->conectar();
+        $result = $bd->exec($sql);
+        
+        if($result === false) {
+            error_log("Falha na execução direta");
             return false;
         }
+        
+        return true;
+    } catch (PDOException $e) {
+        error_log("PDOException (teste): " . $e->getMessage());
+        return false;
     }
-    
-    // ... [mantenha os outros métodos existentes]
+    }
+
+    public function processarImagens($arquivos) {
+        $nomesArquivos = [];
+        
+        if(!empty($arquivos['name'][0])) {
+            $diretorio = 'uploads/solicitacoes/';
+            
+            if(!is_dir($diretorio)) {
+                mkdir($diretorio, 0777, true);
+            }
+
+            foreach($arquivos['name'] as $key => $name) {
+                $extensao = pathinfo($name, PATHINFO_EXTENSION);
+                $nomeUnico = uniqid() . '.' . $extensao;
+                $caminhoCompleto = $diretorio . $nomeUnico;
+
+                if(move_uploaded_file($arquivos['tmp_name'][$key], $caminhoCompleto)) {
+                    $nomesArquivos[] = $caminhoCompleto;
+                }
+            }
+        }
+
+        $this->img_solicitacao = !empty($nomesArquivos) ? implode(',', $nomesArquivos) : null;
+    }
+
+
+   
 }
 ?>
