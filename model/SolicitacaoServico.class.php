@@ -182,66 +182,55 @@ class SolicitacaoServico extends Conexao
 
     // Método para inserir uma nova solicitação de serviço
   public function cadastrarSolicitacao() {
+
+        // Processar imagens, se houver
+        if (isset($img_solicitacao)) {
+            $this->processarImagens($img_solicitacao);
+        } else {
+            $this->setImgSolicitacao(null); // Se não houver imagem, setar como null
+        }
+
+
         // Montar query
-    //     echo $sql = "INSERT INTO tb_solicitacao
-    //             (descricao_solicitacao, cep, logradouro, numero, complemento, 
-    //              bairro, cidade, uf, img_solicitacao, id_status_solicitacao, 
-    //              data_abertura, id_pessoa, id_servico)
-    //             VALUES 
-    //             (:descricao_solicitacao, :cep, :logradouro, :numero, :complemento, 
-    //              :bairro, :cidade, :uf, :img_solicitacao, 1, 
-    //              NOW(), :id_pessoa, :id_servico)";
+        echo $sql = "INSERT INTO tb_solicitacao
+                (descricao_solicitacao, cep, logradouro, numero, complemento, 
+                 bairro, cidade, uf, img_solicitacao, id_status_solicitacao, 
+                 data_abertura, id_pessoa, id_servico)
+                VALUES 
+                (:descricao_solicitacao, :cep, :logradouro, :numero, :complemento, 
+                 :bairro, :cidade, :uf, :img_solicitacao, 1, 
+                 NOW(), :id_pessoa, :id_servico)";
 
-    //     try {
-    //         // Conectar com o banco
-    //         $bd = $this->conectar();
-    //         // Preparar o sql
-    //         $query = $bd->prepare($sql);
-    //         // Blindagem dos dados
-    //                     $query->bindValue(':descricao_solicitacao', $this->getDescricaoSolicitacao(), PDO::PARAM_STR);
-    //         $query->bindValue(':cep', $this->getCep(), PDO::PARAM_STR);
-    //         $query->bindValue(':logradouro', $this->getLogradouro(), PDO::PARAM_STR);
-    //         $query->bindValue(':numero', $this->getNumero(), PDO::PARAM_STR);
-    //         $query->bindValue(':complemento', $this->getComplemento(), PDO::PARAM_STR);
-    //         $query->bindValue(':bairro', $this->getBairro(), PDO::PARAM_STR);
-    //         $query->bindValue(':cidade', $this->getCidade(), PDO::PARAM_STR);
-    //         $query->bindValue(':uf', $this->getUf(), PDO::PARAM_STR);
-    //         $query->bindValue(':img_solicitacao', $this->getImgSolicitacao(), PDO::PARAM_STR);
-    //         $query->bindValue(':id_status_solicitacao', $this->getIdStatusSolicitacao(), PDO::PARAM_INT);
-    //         $query->bindValue(':id_pessoa', $this->getIdPessoa(), PDO::PARAM_INT);
-    //         $query->bindValue(':id_servico', $this->getIdServico(), PDO::PARAM_INT);
+        try {
+            // Conectar com o banco
+            $bd = $this->conectar();
+            // Preparar o sql
+            $query = $bd->prepare($sql);
+            // Blindagem dos dados
+            $query->bindValue(':descricao_solicitacao', $this->getDescricaoSolicitacao(), PDO::PARAM_STR);
+            $query->bindValue(':cep', $this->getCep(), PDO::PARAM_STR);
+            $query->bindValue(':logradouro', $this->getLogradouro(), PDO::PARAM_STR);
+            $query->bindValue(':numero', $this->getNumero(), PDO::PARAM_STR);
+            $query->bindValue(':complemento', $this->getComplemento(), PDO::PARAM_STR);
+            $query->bindValue(':bairro', $this->getBairro(), PDO::PARAM_STR);
+            $query->bindValue(':cidade', $this->getCidade(), PDO::PARAM_STR);
+            $query->bindValue(':uf', $this->getUf(), PDO::PARAM_STR);
+            $query->bindValue(':img_solicitacao', $this->getImgSolicitacao(), PDO::PARAM_STR);
+            $query->bindValue(':id_status_solicitacao', $this->getIdStatusSolicitacao(), PDO::PARAM_INT);
+            $query->bindValue(':id_pessoa', $this->getIdPessoa(), PDO::PARAM_INT);
+            $query->bindValue(':id_servico', $this->getIdServico(), PDO::PARAM_INT);
 
-    //         // Executar a query
-    //         $query->execute();
+            // Executar a query
+            $query->execute();
             
-    //         // Retornar resultado
-    //         return true;
-    //     } catch (PDOException $e) {
-    //         error_log("Erro ao cadastrar solicitação: " . $e->getMessage());
-    //         return false;
-    //     }
-    // }
-
-     $sql = "INSERT INTO tb_solicitacao 
-            (descricao_solicitacao, cep, logradouro, numero, id_pessoa, id_servico, id_status_solicitacao, data_abertura) 
-            VALUES 
-            ('TESTE DESCRIÇÃO', '12345678', 'Rua Teste', '123', 1, 1, 1, NOW())";
-    
-    try {
-        $bd = $this->conectar();
-        $result = $bd->exec($sql);
-        
-        if($result === false) {
-            error_log("Falha na execução direta");
+            // Retornar resultado
+            return true;
+        } catch (PDOException $e) {
+            error_log("Erro ao cadastrar solicitação: " . $e->getMessage());
             return false;
         }
-        
-        return true;
-    } catch (PDOException $e) {
-        error_log("PDOException (teste): " . $e->getMessage());
-        return false;
     }
-    }
+
 
     public function processarImagens($arquivos) {
         $nomesArquivos = [];

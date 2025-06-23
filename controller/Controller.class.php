@@ -1102,7 +1102,6 @@ class Controller
     ##SOLICITAÇÃO DE SERVIÇO
     //cadastrar solicitação de serviço
     public function cadastrar_solicitacao($id_pessoa, $id_servico, $descricao_solicitacao, $img_solicitacao) {
-        session_start(); 
         if (!isset($_SESSION['dadosPessoa']) || empty($_SESSION['dadosPessoa'])) {
             $_SESSION['mensagem'] = [
                 'tipo' => 'danger',
@@ -1130,21 +1129,24 @@ class Controller
         if(!empty($img_solicitacao['name'][0])) {
             $objSolicitacao->processarImagens($img_solicitacao);
         }
-        die();
         // Executar o cadastro
         if($objSolicitacao->cadastrarSolicitacao()) {
-            $_SESSION['mensagem'] = [
-                'tipo' => 'success',
-                'texto' => 'Solicitação cadastrada com sucesso!'
-            ];
-            include_once 'view/NovaSolicitacao.php';
+               session_start();
+               //inserir menu
+               $menu = $this->menu();
+               //incluir a view
+               include_once 'view/Principal.php';
+               //mostrar mensagem
+               $this->mostrarMensagem("Nova solicitação cadastrada com sucesso!");
         } else {
-            $_SESSION['mensagem'] = [
-                'tipo' => 'danger',
-                'texto' => 'Erro ao cadastrar solicitação. Tente novamente.'
-            ];
-            include_once 'view/ErroSolicitacao.php';
-            //header('Location: ?pagina=nova-solicitacao');
+               //iniciar sessao
+               session_start();
+               //inserir menu
+               $menu = $this->menu();
+               //incluir a view
+               include_once 'view/Principal.php';
+               //mostrar mensagem
+               $this->mostrarMensagem("Erro ao cadastrar nova solicitação!");
         }
         exit;
     }
